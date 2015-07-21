@@ -21,7 +21,7 @@ public class RiverDTO implements Serializable {
     private String riverName;
     private List<RiverPartDTO> riverpartList = new ArrayList<>();
     private List<EvaluationSiteDTO> evaluationsiteList = new ArrayList<>();
-    private List<StreamDTO> streamList;
+    private List<StreamDTO> streamList = new ArrayList<>();
 
     public RiverDTO() {
     }

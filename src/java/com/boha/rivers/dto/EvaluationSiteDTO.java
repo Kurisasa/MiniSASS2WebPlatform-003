@@ -27,6 +27,7 @@ public class EvaluationSiteDTO implements Serializable {
     private List<EvaluationDTO> evaluationList = new ArrayList<>();
     private CategoryDTO category;
     private RiverDTO river;
+    private StreamDTO stream;
 
     public EvaluationSiteDTO() {
     }
@@ -44,6 +45,14 @@ public class EvaluationSiteDTO implements Serializable {
         river = new RiverDTO(c.getRiver());
         riverName = c.getRiver().getRiverName();
 
+    }
+
+    public StreamDTO getStream() {
+        return stream;
+    }
+
+    public void setStream(StreamDTO stream) {
+        this.stream = stream;
     }
 
     public String getRiverName() {

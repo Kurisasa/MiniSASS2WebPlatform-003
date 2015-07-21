@@ -15,12 +15,14 @@ import com.boha.rivers.data.Evaluationsite;
 import com.boha.rivers.data.River;
 import com.boha.rivers.data.Riverpart;
 import com.boha.rivers.data.Riverpoint;
+import com.boha.rivers.data.Stream;
 import com.boha.rivers.dto.EvaluationDTO;
 import com.boha.rivers.dto.EvaluationInsectDTO;
 import com.boha.rivers.dto.EvaluationSiteDTO;
 import com.boha.rivers.dto.RiverDTO;
 import com.boha.rivers.dto.RiverPartDTO;
 import com.boha.rivers.dto.RiverPointDTO;
+import com.boha.rivers.dto.StreamDTO;
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -210,6 +212,10 @@ public class RiverDataWorker {
                 }
                 System.out.print("\t\t### " + river.getRiverName() + " riverPart: " + rp.getRiverPartID() + " points found: " + pointList.size());
                 riverDTO.getRiverpartList().add(rpDTO);
+            }
+
+            for (Stream steam : river.getStreamList()) {
+                riverDTO.getStreamList().add(new StreamDTO(steam));
             }
             riverDTO.setEvaluationsiteList(buildSites(river.getRiverID()));
             rivers.add(riverDTO);

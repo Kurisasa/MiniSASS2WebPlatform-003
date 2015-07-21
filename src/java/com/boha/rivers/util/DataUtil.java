@@ -693,6 +693,7 @@ public class DataUtil {
         return resp;
     }
 
+    //adding stream
     public ResponseDTO addEvaluation(EvaluationDTO evaluation, List<InsectImageDTO> insectImages) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
@@ -703,17 +704,22 @@ public class DataUtil {
             ev.setLatitude(evaluation.getEvaluationSite().getLatitude());
             ev.setDateRegistered(new Date());
 
-            if (evaluation.getEvaluationSite().getRiverID() == null) {
-                River newRiver = new River();
-                newRiver.setRiverName(evaluation.getEvaluationSite().getRiverName());
-                em.persist(newRiver);
+            if (evaluation.getEvaluationSite().getStream() != null) {
+                Stream newStream = new Stream();
+                newStream.setLongitude(evaluation.getEvaluationSite().getLongitude());
+                newStream.setLatitude(evaluation.getEvaluationSite().getLatitude());
+                newStream.setStreamName(evaluation.getEvaluationSite().getStream().getStreamName());
+                newStream.setRiver(em.find(River.class, evaluation.getEvaluationSite().getRiverID()));
+                em.persist(newStream);
                 em.flush();
             }
+          
             ev.setRiver(em.find(River.class, evaluation.getEvaluationSite().getRiverID()));
             ev.setCategory(em.find(Category.class, evaluation.getEvaluationSite().getCategoryID()));
             em.persist(ev);
             em.flush();
 
+            
             Evaluation e = new Evaluation();
 
             e.setTeamMember(em.find(Teammember.class, evaluation.getTeamMemberID()));

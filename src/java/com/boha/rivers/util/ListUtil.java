@@ -73,9 +73,8 @@ public class ListUtil {
         try {
             ResponseDTO resp = new ResponseDTO();
             resp.setCategoryList(getCategoryDTOs());
-            resp.setCommentList(getCommentDTOs());
             resp.setConditionsList(getConditionsDTOs());
-            resp.setInsectList(getInsectDTOs());
+            resp.setInsectimageDTOList(getInsectImageList());
             resp.setRiverList(getRiverDTOs());
             return resp;
         } catch (Exception ex) {
@@ -382,6 +381,9 @@ public class ListUtil {
                 }
 
                 riverDTO.getEvaluationsiteList().add(evaluationSiteDTO);
+            }
+            for (Stream s : riv.getStreamList()) {
+                riverDTO.getStreamList().add(new StreamDTO(s));
             }
             resp.getRiverList().add(riverDTO);
 
