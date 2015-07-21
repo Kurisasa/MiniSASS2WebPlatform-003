@@ -31,6 +31,7 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(name = "Tmember.findAll", query = "SELECT t FROM Tmember t"),
     @NamedQuery(name = "Tmember.findByTeamID", query = "SELECT t FROM Tmember t WHERE t.team.teamID = :teamID"),
+    @NamedQuery(name = "Tmember.findByTeamMemberID", query = "SELECT t FROM Tmember t WHERE t.teamMember.teamMemberID = :teamMemberID"),
     @NamedQuery(name = "Tmember.findInvite", query = "SELECT t FROM Tmember t WHERE t.team.teamID = :teamID AND t.teamMember.teamMemberID = :teamMemberID"),
     @NamedQuery(name = "Tmember.findByTmemberID", query = "SELECT t FROM Tmember t WHERE t.tmemberID = :tmemberID"),
     @NamedQuery(name = "Tmember.findByDateCreated", query = "SELECT t FROM Tmember t WHERE t.dateCreated = :dateCreated")})

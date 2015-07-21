@@ -35,16 +35,20 @@ public class TeamMemberDTO implements Serializable {
 
     public TeamMemberDTO(Teammember c) {
         teamMemberID = c.getTeamMemberID();
-        teamID = c.getTeam().getTeamID();
+        if (c.getTeam() != null) {
+            teamID = c.getTeam().getTeamID();
+            team = new TeamDTO(c.getTeam());
+        }
+
         firstName = c.getFirstName();
         lastName = c.getLastName();
         email = c.getEmail();
         cellphone = c.getCellphone();
         dateRegistered = c.getDateRegistered().getTime();
-        //  pin = c.getPin();
+        pin = c.getPin();
         activeFlag = c.getActiveFlag();
         teamMemberImage = c.getTeamMemberImage();
-        // team = new TeamDTO(c.getTeam());
+
     }
 
     public List<TmemberDTO> getTmemberList() {
