@@ -31,7 +31,7 @@ public class RequestDTO implements Serializable {
     public static final int GET_RIVERS_BY_RADIUS = 100;
 
     private Integer requestType;
-    private String email, password;
+    private String email, password, search;
     private Integer countryID, categoryID, commentID, conditionsID, evaluationID, evaluationInsectID,
             evaluationCommentID, evaluationSiteID, insectID, provinceID, riverID, teamID, townID, teamMemberID,
             evaluationImageID, organisationTypeID, streamID, tmemberID;
@@ -69,7 +69,7 @@ public class RequestDTO implements Serializable {
     public static final int LIST_RIVERS_IN_COUNTRY = 40,
             LIST_RIVER_TOWNS = 41,
             LIST_EVALUATION_SITES = 42,
-            LIST_INSECTS = 43,
+            SEARCH_MEMBERS = 43,
             GET_MEMBER = 44,
             LIST_EVALUATION_SITE_BY_RIVER = 45,
             LIST_PROVINCE_BY_COUNTRY = 46,
@@ -126,6 +126,14 @@ public class RequestDTO implements Serializable {
 
     public static final String EVALUATION_IMAGE_DIR = "evaluation_images";
     public static final String RIVER_DIR = "river";
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
 
     public GcmdeviceDTO getGcmDevice() {
         return gcmDevice;

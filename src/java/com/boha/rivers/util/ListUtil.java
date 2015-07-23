@@ -298,8 +298,8 @@ public class ListUtil {
             }
         }
         TeamDTO team = new TeamDTO(cs.getTeam());
-        for(Teammember t:cs.getTeam().getTeammemberList()){
-            if(!t.getEmail().equals(cs.getEmail())){
+        for (Teammember t : cs.getTeam().getTeammemberList()) {
+            if (!t.getEmail().equals(cs.getEmail())) {
                 team.getTeammemberList().add(new TeamMemberDTO(t));
             }
         }
@@ -318,6 +318,23 @@ public class ListUtil {
             resp.getTeamMemberList().add(new TeamMemberDTO(tm));
         }
 
+        return resp;
+    }
+
+    public ResponseDTO searchForMembers(String search, String email) {
+        ResponseDTO resp = new ResponseDTO();
+        Query q = em.createNamedQuery("Teammember.findTeamMemberBySearch", Teammember.class);
+        q.setParameter("search", "%" + search + "%");
+        List<Teammember> list = q.getResultList();
+        for (Teammember t : list) {
+            TeamMemberDTO tdto = new TeamMemberDTO(t);
+            if (!email.equals(t.getEmail())) {
+                for (Tmember tm : t.getTmemberList()) {
+                    tdto.getTmemberList().add(new TmemberDTO(tm));
+                }
+                resp.getTeamMemberList().add(tdto);
+            }
+        }
         return resp;
     }
 

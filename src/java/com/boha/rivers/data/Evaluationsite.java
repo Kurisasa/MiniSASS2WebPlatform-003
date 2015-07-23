@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "evaluationsite")
 @NamedQueries({
     @NamedQuery(name = "Evaluationsite.findAll", query = "SELECT e FROM Evaluationsite e"),
-    @NamedQuery(name = "Evaluationsite.findByRiverID", query = "SELECT e FROM Evaluationsite e WHERE e.river.riverID =:riverID ORDER BY e.dateRegistered"),
+    @NamedQuery(name = "Evaluationsite.findByRiverID", query = "SELECT e FROM Evaluationsite e WHERE e.river.riverID =:riverID ORDER BY e.dateRegistered DESC"),
     @NamedQuery(name = "Evaluationsite.findByEvaluationSiteID", query = "SELECT e FROM Evaluationsite e WHERE e.evaluationSiteID = :evaluationSiteID"),
     @NamedQuery(name = "Evaluationsite.findByLatitude", query = "SELECT e FROM Evaluationsite e WHERE e.latitude = :latitude"),
     @NamedQuery(name = "Evaluationsite.findByLongitude", query = "SELECT e FROM Evaluationsite e WHERE e.longitude = :longitude"),

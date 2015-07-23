@@ -34,18 +34,31 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "teammember")
 @NamedQueries({
+    @NamedQuery(name = "Teammember.findTeamMemberBySearch",
+            query = "SELECT t FROM Teammember t WHERE LOWER(t.firstName) LIKE LOWER(:search) OR LOWER(t.lastName) LIKE LOWER(:search) OR LOWER(t.team.teamName) LIKE LOWER(:search)"),
     @NamedQuery(name = "Teammember.findAll", query = "SELECT t FROM Teammember t"),
-        @NamedQuery(name = "Teammember.signin", query = "SELECT t FROM Teammember t WHERE t.email = :email AND t.pin = :pin"),
-    @NamedQuery(name = "Teammember.findByTeamMemberID", query = "SELECT t FROM Teammember t WHERE t.teamMemberID = :teamMemberID"),
-    @NamedQuery(name = "Teammember.findByFirstName", query = "SELECT t FROM Teammember t WHERE t.firstName = :firstName"),
-    @NamedQuery(name = "Teammember.findByLastName", query = "SELECT t FROM Teammember t WHERE t.lastName = :lastName"),
-    @NamedQuery(name = "Teammember.findByEmail", query = "SELECT t FROM Teammember t WHERE t.email = :email"),
-    @NamedQuery(name = "Teammember.findByCellphone", query = "SELECT t FROM Teammember t WHERE t.cellphone = :cellphone"),
-    @NamedQuery(name = "Teammember.findByDateRegistered", query = "SELECT t FROM Teammember t WHERE t.dateRegistered = :dateRegistered"),
-    @NamedQuery(name = "Teammember.findByPin", query = "SELECT t FROM Teammember t WHERE t.pin = :pin"),
-    @NamedQuery(name = "Teammember.findByActiveFlag", query = "SELECT t FROM Teammember t WHERE t.activeFlag = :activeFlag"),
-    @NamedQuery(name = "Teammember.findByTeamMemberImage", query = "SELECT t FROM Teammember t WHERE t.teamMemberImage = :teamMemberImage")})
+    @NamedQuery(name = "Teammember.signin",
+            query = "SELECT t FROM Teammember t WHERE t.email = :email AND t.pin = :pin"),
+    @NamedQuery(name = "Teammember.findByTeamMemberID",
+            query = "SELECT t FROM Teammember t WHERE t.teamMemberID = :teamMemberID"),
+    @NamedQuery(name = "Teammember.findByFirstName",
+            query = "SELECT t FROM Teammember t WHERE t.firstName = :firstName"),
+    @NamedQuery(name = "Teammember.findByLastName",
+            query = "SELECT t FROM Teammember t WHERE t.lastName = :lastName"),
+    @NamedQuery(name = "Teammember.findByEmail",
+            query = "SELECT t FROM Teammember t WHERE t.email = :email"),
+    @NamedQuery(name = "Teammember.findByCellphone",
+            query = "SELECT t FROM Teammember t WHERE t.cellphone = :cellphone"),
+    @NamedQuery(name = "Teammember.findByDateRegistered",
+            query = "SELECT t FROM Teammember t WHERE t.dateRegistered = :dateRegistered"),
+    @NamedQuery(name = "Teammember.findByPin",
+            query = "SELECT t FROM Teammember t WHERE t.pin = :pin"),
+    @NamedQuery(name = "Teammember.findByActiveFlag",
+            query = "SELECT t FROM Teammember t WHERE t.activeFlag = :activeFlag"),
+    @NamedQuery(name = "Teammember.findByTeamMemberImage",
+            query = "SELECT t FROM Teammember t WHERE t.teamMemberImage = :teamMemberImage")})
 public class Teammember implements Serializable {
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamMember")
     private List<Gcmdevice> gcmdeviceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamMember")
@@ -89,7 +102,7 @@ public class Teammember implements Serializable {
     private String pin;
     @Column(name = "activeFlag")
     private Integer activeFlag;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamMember")
     private List<Evaluation> evaluationList;
     @JoinColumn(name = "teamID", referencedColumnName = "teamID")
@@ -199,7 +212,6 @@ public class Teammember implements Serializable {
         this.team = team;
     }
 
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -241,6 +253,4 @@ public class Teammember implements Serializable {
         this.gcmdeviceList = gcmdeviceList;
     }
 
-  
-    
 }
