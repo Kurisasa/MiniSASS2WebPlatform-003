@@ -5,9 +5,9 @@
  */
 package com.boha.rivers.servlet;
 
-
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.ResponseDTO;
+import com.boha.rivers.util.CloudMsgUtil;
 import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
@@ -38,12 +38,14 @@ public class RiverListingServlet extends HttpServlet {
 
     @EJB
     RiverDataWorker dataWorker;
-     @EJB
+    @EJB
     DataUtil dataUtil;
     @EJB
     ListUtil listUtil;
     @EJB
     TrafficCop trafficCop;
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
     @EJB
     PlatformUtil platformUtil;
     static final String SOURCE = "RiverListingServlet";
@@ -71,8 +73,8 @@ public class RiverListingServlet extends HttpServlet {
                 log.log(Level.INFO, "{0} started ..requestType: {1}",
                         new Object[]{RiverListingServlet.class.getSimpleName(), dto.getRequestType()});
                 resp = trafficCop.processRequest(dto,
-                    dataUtil, listUtil);
-                
+                        dataUtil, listUtil, cloudMsgUtil, platformUtil);
+
             } else {
                 resp.setStatusCode(999);
                 resp.setMessage("Unknown request. Call your Mother!");
@@ -82,7 +84,7 @@ public class RiverListingServlet extends HttpServlet {
             resp.setStatusCode(899);
             resp.setMessage("Server encountered a problem. Call your Mom!");
         } finally {
-            
+
             response.setContentType("application/zip;charset=UTF-8");
             File zipped;
             String json = gson.toJson(resp);
@@ -91,8 +93,7 @@ public class RiverListingServlet extends HttpServlet {
                 zipped = GZipUtility.getZipped(json);
                 ServletUtils.returnFile(zipped.getAbsolutePath(), response.getOutputStream());
                 response.getOutputStream().close();
-                log.log(Level.OFF, "### Json Response: {0} -  "
-                        , new Object[]{json});
+                log.log(Level.OFF, "### Json Response: {0} -  ", new Object[]{json});
                 log.log(Level.OFF, "### Zipped Length of Response: {0} -  "
                         + "unzipped length: {1}", new Object[]{zipped.length(), json.length()});
             } catch (IOException e) {
@@ -125,6 +126,7 @@ public class RiverListingServlet extends HttpServlet {
     }
     private static final Logger log = Logger.getLogger(RiverListingServlet.class
             .getSimpleName());
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

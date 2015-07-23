@@ -7,8 +7,10 @@ package com.boha.rivers.gate;
 
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.ResponseDTO;
+import com.boha.rivers.util.CloudMsgUtil;
 import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.ListUtil;
+import com.boha.rivers.util.PlatformUtil;
 import com.boha.rivers.util.TrafficCop;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -31,12 +33,15 @@ public class Test extends HttpServlet {
 
     @EJB
     DataUtil dataUtil;
-
     @EJB
     ListUtil listUtil;
-
     @EJB
     TrafficCop trafficCop;
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
+    @EJB
+    PlatformUtil platformUtil;
+
     Gson gson = new Gson();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -49,7 +54,7 @@ public class Test extends HttpServlet {
         try {
             RequestDTO req = getRequest(request);
             ur = trafficCop.processRequest(req,
-                    dataUtil, listUtil);
+                    dataUtil, listUtil, cloudMsgUtil, platformUtil);
 
         } catch (Exception ex) {
             log.log(Level.OFF, "Failed.....{0}", ex);

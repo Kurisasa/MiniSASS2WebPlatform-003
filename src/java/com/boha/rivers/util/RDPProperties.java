@@ -60,9 +60,9 @@ public class RDPProperties {
         props = new Properties();
         try {
             File f = null;
-            f = new File("/Properties/rdp.properties");
+            f = new File("C:/properties/minisass.properties");
             if (!f.exists()) {
-                f = new File("/opt/properties/rdp.properties");
+                f = new File("/opt/properties/minisass.properties");
             }
             if (!f.exists()) {
                 logger.log(Level.SEVERE, "rdp Properties File not found");

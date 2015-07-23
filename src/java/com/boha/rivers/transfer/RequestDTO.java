@@ -7,6 +7,7 @@ import com.boha.rivers.dto.EvaluationDTO;
 import com.boha.rivers.dto.EvaluationImageDTO;
 import com.boha.rivers.dto.EvaluationInsectDTO;
 import com.boha.rivers.dto.EvaluationSiteDTO;
+import com.boha.rivers.dto.GcmdeviceDTO;
 import com.boha.rivers.dto.InsectDTO;
 import com.boha.rivers.dto.InsectImageDTO;
 import com.boha.rivers.dto.RiverDTO;
@@ -21,23 +22,23 @@ import java.util.List;
  *
  * @author aubreyM
  */
-public class RequestDTO implements Serializable{
-    
-     private Double latitude, longitude;
+public class RequestDTO implements Serializable {
+
+    private Double latitude, longitude;
     private int radius;
     private int type;
-    
+
     public static final int GET_RIVERS_BY_RADIUS = 100;
 
     private Integer requestType;
     private String email, password;
     private Integer countryID, categoryID, commentID, conditionsID, evaluationID, evaluationInsectID,
             evaluationCommentID, evaluationSiteID, insectID, provinceID, riverID, teamID, townID, teamMemberID,
-            evaluationImageID, organisationTypeID, streamID,tmemberID;
+            evaluationImageID, organisationTypeID, streamID, tmemberID;
 
     public static final int REGISTER_TEAM = 1,
             SIGN_IN_MEMBER = 3,
-            REGISTER_TEAM_MEMBER = 2, 
+            REGISTER_TEAM_MEMBER = 2,
             DECLINE_MEMBER = 12,
             ADD_INSECT = 13,
             ADD_INSECT_IMAGE = 14,
@@ -45,7 +46,7 @@ public class RequestDTO implements Serializable{
             ADD_COMMENT = 16,
             ADD_EVALUATION_INSECT = 17,
             ADD_TEAM = 18,
-            ADD_STREAM= 19;
+            ADD_STREAM = 19;
 
     public static final int ADD_COUNTRY = 21,
             INVITE_MEMBER = 22,
@@ -62,14 +63,14 @@ public class RequestDTO implements Serializable{
             UPDATE_COMMENT = 38,
             UPDATE_EVALUATION = 39,
             UPDATE_CONDITIONS = 55,
-            UPDATE_EVALUATION_IMAGE = 56,
+            SEND_INVITE_TO_TEAM = 56,
             UPDATE_STREAM = 57;
 
     public static final int LIST_RIVERS_IN_COUNTRY = 40,
             LIST_RIVER_TOWNS = 41,
             LIST_EVALUATION_SITES = 42,
             LIST_INSECTS = 43,
-            LIST_TEAMS = 44,
+            GET_MEMBER = 44,
             LIST_EVALUATION_SITE_BY_RIVER = 45,
             LIST_PROVINCE_BY_COUNTRY = 46,
             LIST_REGISTER_DATA = 50,
@@ -92,7 +93,6 @@ public class RequestDTO implements Serializable{
             LIST_OF_INSECTS_IMAGES = 77,
             LIST_EVALUATION_BY_RIVER_ID = 78,
             ADD_GCM_DEVICE = 79,
-            
             LIST_STREAM = 90,
             LIST_BY_STREAM_NAME = 91;
 
@@ -110,6 +110,7 @@ public class RequestDTO implements Serializable{
     private InsectImageDTO insectImage;
     private StreamDTO stream;
     private TmemberDTO tmember;
+    private GcmdeviceDTO gcmDevice;
 
     public static final String SAMPLE_DIR = "company";
 
@@ -125,6 +126,14 @@ public class RequestDTO implements Serializable{
 
     public static final String EVALUATION_IMAGE_DIR = "evaluation_images";
     public static final String RIVER_DIR = "river";
+
+    public GcmdeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmdeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
+    }
 
     public Integer getTmemberID() {
         return tmemberID;
@@ -157,7 +166,6 @@ public class RequestDTO implements Serializable{
     public void setStreamID(Integer streamID) {
         this.streamID = streamID;
     }
-    
 
     public Integer getOrganisationTypeID() {
         return organisationTypeID;
@@ -175,7 +183,6 @@ public class RequestDTO implements Serializable{
         this.insectImages = insectImages;
     }
 
-    
     public CategoryDTO getCategory() {
         return category;
     }
@@ -192,7 +199,6 @@ public class RequestDTO implements Serializable{
         this.conditions = conditions;
     }
 
-    
     public EvaluationImageDTO getEvaluationImage() {
         return evaluationImage;
     }
@@ -456,5 +462,5 @@ public class RequestDTO implements Serializable{
     public void setType(int type) {
         this.type = type;
     }
- 
+
 }

@@ -5,12 +5,15 @@
  */
 package com.boha.rivers.gate;
 
+import static com.boha.rivers.gate.CachedRequestWebSocket.log;
+import static com.boha.rivers.gate.Test.log;
+import static com.boha.rivers.servlet.RiverListingServlet.getElapsed;
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.RequestList;
 import com.boha.rivers.transfer.ResponseDTO;
+import com.boha.rivers.util.CloudMsgUtil;
 import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.Elapsed;
-import static com.boha.rivers.util.Elapsed.getElapsed;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
 import com.boha.rivers.util.PlatformUtil;
@@ -45,7 +48,8 @@ public class CachedDataServlet extends HttpServlet {
     PlatformUtil platformUtil;
     @EJB
     TrafficCop trafficCop;
-
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
     static final String SOURCE = "CachedDataServlet";
 
     /**
@@ -71,7 +75,7 @@ public class CachedDataServlet extends HttpServlet {
 
             RequestList dto = getRequest(request);
             for (RequestDTO req : dto.getRequests()) {
-                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil);
+                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil, cloudMsgUtil, platformUtil);
                 if (resp.getStatusCode() == 0) {
                     goodCount++;
                 } else {
@@ -85,7 +89,7 @@ public class CachedDataServlet extends HttpServlet {
             long end = System.currentTimeMillis();
             ur.setElapsedRequestTimeInSeconds(Elapsed.getElapsed(start, end));
             log.log(Level.INFO, "Total elapsed time: {0}", ur.getElapsedRequestTimeInSeconds());
-           
+
         } catch (Exception ex) {
             ur.setMessage("Unable to process cached requests");
             ur.setStatusCode(777);

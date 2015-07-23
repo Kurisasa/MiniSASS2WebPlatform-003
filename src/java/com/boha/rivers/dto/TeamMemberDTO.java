@@ -29,17 +29,14 @@ public class TeamMemberDTO implements Serializable {
     private List<EvaluationDTO> evaluationList = new ArrayList<>();
     private TeamDTO team;
     private List<TmemberDTO> tmemberList = new ArrayList<>();
+    private List<GcmdeviceDTO> gcmdeviceList = new ArrayList<>();
 
     public TeamMemberDTO() {
     }
 
     public TeamMemberDTO(Teammember c) {
         teamMemberID = c.getTeamMemberID();
-        if (c.getTeam() != null) {
-            teamID = c.getTeam().getTeamID();
-            team = new TeamDTO(c.getTeam());
-        }
-
+        teamID = c.getTeam().getTeamID();
         firstName = c.getFirstName();
         lastName = c.getLastName();
         email = c.getEmail();
@@ -48,7 +45,15 @@ public class TeamMemberDTO implements Serializable {
         pin = c.getPin();
         activeFlag = c.getActiveFlag();
         teamMemberImage = c.getTeamMemberImage();
+        // team = new TeamDTO(c.getTeam());
+    }
 
+    public List<GcmdeviceDTO> getGcmdeviceList() {
+        return gcmdeviceList;
+    }
+
+    public void setGcmdeviceList(List<GcmdeviceDTO> gcmdeviceList) {
+        this.gcmdeviceList = gcmdeviceList;
     }
 
     public List<TmemberDTO> getTmemberList() {

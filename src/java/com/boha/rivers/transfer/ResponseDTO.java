@@ -32,6 +32,8 @@ import java.util.List;
  */
 public class ResponseDTO implements Serializable {
 
+    public static final int ERROR_SERVER = 150;
+
     private Integer statusCode;
     private String message;
     private Integer statusCountInPeriod, goodCount, badCount;

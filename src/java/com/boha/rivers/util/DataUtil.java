@@ -8,6 +8,7 @@ import com.boha.rivers.data.Evaluation;
 import com.boha.rivers.data.Evaluationimage;
 import com.boha.rivers.data.Evaluationinsect;
 import com.boha.rivers.data.Evaluationsite;
+import com.boha.rivers.data.Gcmdevice;
 import com.boha.rivers.data.Insect;
 import com.boha.rivers.data.Insectimage;
 import com.boha.rivers.data.Organisationtype;
@@ -24,6 +25,7 @@ import com.boha.rivers.dto.EvaluationDTO;
 import com.boha.rivers.dto.EvaluationImageDTO;
 import com.boha.rivers.dto.EvaluationInsectDTO;
 import com.boha.rivers.dto.EvaluationSiteDTO;
+import com.boha.rivers.dto.GcmdeviceDTO;
 import com.boha.rivers.dto.InsectDTO;
 import com.boha.rivers.dto.InsectImageDTO;
 import com.boha.rivers.dto.OrganisationtypeDTO;
@@ -65,8 +67,8 @@ public class DataUtil {
         return em;
     }
 
-    public ResponseDTO login(String email,
-            String pin, ListUtil listUtil) throws DataException {
+    public ResponseDTO loginTeamMember(String email,
+            String pin, GcmdeviceDTO gcmdevice, ListUtil listUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("Teammember.signin", Teammember.class);
@@ -74,6 +76,8 @@ public class DataUtil {
             q.setParameter("pin", pin);
             q.setMaxResults(1);
             Teammember cs = (Teammember) q.getSingleResult();
+
+            addDevice(gcmdevice, cs.getTeamMemberID());
 
             TeamMemberDTO teamM = new TeamMemberDTO(cs);
             for (Tmember t1 : cs.getTmemberList()) {
@@ -90,10 +94,17 @@ public class DataUtil {
                     }
                 }
             }
-            teamM.setTeam(getMyTeamWithMembers(cs.getTeam().getTeamID(), cs.getEmail()));
+            TeamDTO team = new TeamDTO(cs.getTeam());
+            for (Teammember t : cs.getTeam().getTeammemberList()) {
+                if (!t.getEmail().equals(cs.getEmail())) {
+                    team.getTeammemberList().add(new TeamMemberDTO(t));
+                }
+            }
+            teamM.setTeam(team);
             teamM.setEvaluationCount(cs.getEvaluationList().size());
 
             resp.setTeamMember(teamM);
+
             resp.setOrganisationtypeList(listUtil.getOrganisationtypeList());
             resp.setCountryList(listUtil.getCountryList());
         } catch (Exception e) {
@@ -103,9 +114,39 @@ public class DataUtil {
         return resp;
     }
 
+    private GcmdeviceDTO addDevice(GcmdeviceDTO gcmdevice, Integer teamMemberID) throws DataException {
+        GcmdeviceDTO dto = null;
+        try {
+            Gcmdevice ct = new Gcmdevice();
+            log.log(Level.OFF, null, new Gson().toJson(gcmdevice));
+            ct.setAndroidVersion(gcmdevice.getAndroidVersion());
+            ct.setDateRegistered(new Date());
+            ct.setManufacturer(gcmdevice.getManufacturer());
+            ct.setMessageCount(gcmdevice.getMessageCount());
+            ct.setModel(gcmdevice.getModel());
+            ct.setProduct(gcmdevice.getProduct());
+            ct.setRegistrationID(gcmdevice.getRegistrationID());
+            ct.setSerialNumber(gcmdevice.getSerialNumber());
+            ct.setTeamMember(em.find(Teammember.class, teamMemberID));
+
+            em.persist(ct);
+            em.flush();
+            //resp.getCountryList().add(new CountryDTO(ct));
+            dto = new GcmdeviceDTO(ct);
+            log.log(Level.OFF, "Township has been added for: {0} ",
+                    new Object[]{ct.getRegistrationID()});
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed", e);
+            throw new DataException("Failed");
+        }
+        return dto;
+    }
+
     // newly created method to invited member
-    public TmemberDTO inviteMembers(TmemberDTO tmember) throws DataException {
+    public ResponseDTO inviteMembers(TmemberDTO tmember) throws DataException {
         TmemberDTO dto = null;
+        ResponseDTO resp = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("Tmember.findInvite", Tmember.class);
             q.setParameter("teamMemberID", tmember.getTeamMemberID());
@@ -119,7 +160,7 @@ public class DataUtil {
                 em.merge(tInvite);
                 em.flush();
                 dto = new TmemberDTO(tInvite);
-
+                resp.settMember(dto);
             } catch (NoResultException e) {
                 Tmember t = new Tmember();
                 t.setTeam(em.find(Team.class, tmember.getTeamID()));
@@ -131,6 +172,7 @@ public class DataUtil {
                 em.flush();
 
                 dto = new TmemberDTO(t);
+                resp.settMember(dto);
                 log.log(Level.OFF, "Team Member has been registered for: {0} ",
                         new Object[]{t.getTmemberID()});
             }
@@ -139,7 +181,7 @@ public class DataUtil {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed");
         }
-        return dto;
+        return resp;
     }
 
     //method to declined the invite
@@ -187,6 +229,7 @@ public class DataUtil {
     public ResponseDTO registerTeamMember(TeamMemberDTO member, ListUtil listUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
+            log.log(Level.OFF, "Something: {0}", new Gson().toJson(member));
             Teammember tm = new Teammember();
             tm.setTeam(em.find(Team.class, member.getTeamID()));
 
@@ -210,8 +253,8 @@ public class DataUtil {
             for (Tmember t1 : cs.getTmemberList()) {
 
                 TmemberDTO dTO = new TmemberDTO(t1);
+                TeamDTO dTO2 = new TeamDTO(t1.getTeam());
                 if (!cs.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
-                    TeamDTO dTO2 = new TeamDTO(t1.getTeam());
                     for (Teammember mt : t1.getTeam().getTeammemberList()) {
                         if (!cs.getEmail().equals(mt.getEmail())) {
                             dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
@@ -221,11 +264,18 @@ public class DataUtil {
                     }
                 }
             }
-            teamM.setTeam(getMyTeamWithMembers(cs.getTeam().getTeamID(), cs.getEmail()));
+            TeamDTO team = new TeamDTO(cs.getTeam());
+            for (Teammember t : cs.getTeam().getTeammemberList()) {
+                if (!t.getEmail().equals(cs.getEmail())) {
+                    team.getTeammemberList().add(new TeamMemberDTO(t));
+                }
+            }
+            teamM.setTeam(team);
             teamM.setEvaluationCount(cs.getEvaluationList().size());
+            resp.setTeamMember(teamM);
             resp.setOrganisationtypeList(listUtil.getOrganisationtypeList());
             resp.setCountryList(listUtil.getCountryList());
-            resp.setTeamMember(teamM);
+
             log.log(Level.OFF, "Team Member has been registered for: {0} ",
                     new Object[]{tm.getFirstName()});
 
@@ -236,7 +286,7 @@ public class DataUtil {
         return resp;
     }
 
-    private TeamDTO getMyTeamWithMembers(Integer teamID, String email) {
+    public TeamDTO getMyTeamWithMembers(Integer teamID, String email) {
         TeamDTO dto = new TeamDTO();
         Query q = em.createNamedQuery("Tmember.findByTeamID", Tmember.class);
         q.setParameter("teamID", teamID);
@@ -412,7 +462,7 @@ public class DataUtil {
                     tmember.setAcceptInvite(1);
                     tmember.setTeamID(t.getTeamID());
                     tmember.setTeamMemberID(tmInvite.getTeamMemberID());
-                    teamDTO.getTmemberList().add(inviteMembers(tmember));
+                    teamDTO.getTmemberList().add(inviteMembers(tmember).gettMember());
                     /*EmailUtil.sendMail(tms.getEmail(), "Minisass Registration", "Hi, " + tms.getFirstName()
                      + "\n You've Succesfully Registered on Minisass Under Team " + team.getTeamName()
                      + ", Here are your Siging in details:\n"
@@ -626,18 +676,30 @@ public class DataUtil {
 
             em.merge(tm);
             em.flush();
-            TeamDTO dTO = new TeamDTO(tm.getTeam());
+            TeamMemberDTO teamM = new TeamMemberDTO(tm);
+            for (Tmember t1 : tm.getTmemberList()) {
 
-            for (Teammember t : tm.getTeam().getTeammemberList()) {
-                TeamMemberDTO teamDTO = new TeamMemberDTO(t);
-                if (!tm.getEmail().equals(t.getEmail())) {
-                    dTO.getTeammemberList().add(teamDTO);
+                TmemberDTO dTO = new TmemberDTO(t1);
+                TeamDTO dTO2 = new TeamDTO(t1.getTeam());
+                if (!tm.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
+                    for (Teammember mt : t1.getTeam().getTeammemberList()) {
+                        if (!tm.getEmail().equals(mt.getEmail())) {
+                            dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
+                        }
+                        dTO.setTeam(dTO2);
+                        teamM.getTmemberList().add(dTO);
+                    }
                 }
             }
-
-            TeamMemberDTO teamM = new TeamMemberDTO(tm);
-            teamM.setTeam(dTO);
+            TeamDTO team = new TeamDTO(tm.getTeam());
+            for (Teammember t : tm.getTeam().getTeammemberList()) {
+                if (!t.getEmail().equals(tm.getEmail())) {
+                    team.getTeammemberList().add(new TeamMemberDTO(t));
+                }
+            }
+            teamM.setTeam(team);
             teamM.setEvaluationCount(tm.getEvaluationList().size());
+
             resp.setTeamMember(teamM);
 
             log.log(Level.INFO, "Team member updated");
@@ -694,7 +756,7 @@ public class DataUtil {
     }
 
     //adding stream
-    public ResponseDTO addEvaluation(EvaluationDTO evaluation, List<InsectImageDTO> insectImages) throws DataException {
+    public ResponseDTO addEvaluation(EvaluationDTO evaluation, List<InsectImageDTO> insectImages, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
 
@@ -713,13 +775,12 @@ public class DataUtil {
                 em.persist(newStream);
                 em.flush();
             }
-          
+
             ev.setRiver(em.find(River.class, evaluation.getEvaluationSite().getRiverID()));
             ev.setCategory(em.find(Category.class, evaluation.getEvaluationSite().getCategoryID()));
             em.persist(ev);
             em.flush();
 
-            
             Evaluation e = new Evaluation();
 
             e.setTeamMember(em.find(Teammember.class, evaluation.getTeamMemberID()));
@@ -769,7 +830,17 @@ public class DataUtil {
 
             log.log(Level.OFF, "evaluation has been added for: {0} ",
                     new Object[]{e.getEvaluationDate()});
-
+            Query q = em.createNamedQuery("Gcmdevice.findTeamMember", Gcmdevice.class);
+            q.setParameter("teamMemberID", evaluation.getTeamMemberID());
+            List<Gcmdevice> list = q.getResultList();
+            List<String> registrationIDs = new ArrayList<>();
+            for (Gcmdevice g : list) {
+                registrationIDs.add(g.getRegistrationID());
+            }
+            int OK = cloudMsgUtil.sendMessage(registrationIDs, platformUtil);
+            if (OK == 0) {
+                resp.setMessage("Observation created and GCM message sent");
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed");

@@ -5,6 +5,7 @@
  */
 package com.boha.rivers.util;
 
+import com.boha.rivers.data.Gcmdevice;
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.ResponseDTO;
 import java.util.logging.Level;
@@ -13,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -30,8 +32,14 @@ public class TrafficCop {
     @EJB
     RiverDataWorker dataWorker;
 
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
+
+    @EJB
+    PlatformUtil platformUtil;
+
     public ResponseDTO processRequest(RequestDTO req,
-            DataUtil dataUtil, ListUtil listUtil) {
+            DataUtil dataUtil, ListUtil listUtil, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil) {
         long start = System.currentTimeMillis();
         ResponseDTO ur = new ResponseDTO();
         try {
@@ -43,13 +51,13 @@ public class TrafficCop {
                     ur = dataUtil.registerTeamMember(req.getTeamMember(), listUtil);
                     break;
                 case RequestDTO.SIGN_IN_MEMBER:
-                    ur = dataUtil.login(req.getEmail(), req.getPassword(), listUtil);
+                    ur = dataUtil.loginTeamMember(req.getEmail(), req.getPassword(), req.getGcmDevice(), listUtil);
                     break;
                 case RequestDTO.ADD_COMMENT:
                     ur = dataUtil.addComment(req.getComment());
                     break;
                 case RequestDTO.ADD_EVALUATION:
-                    ur = dataUtil.addEvaluation(req.getEvaluation(), req.getInsectImages());
+                    ur = dataUtil.addEvaluation(req.getEvaluation(), req.getInsectImages(), cloudMsgUtil, platformUtil);
                     break;
                 case RequestDTO.INVITE_MEMBER:
                     dataUtil.inviteMembers(req.getTmember());
@@ -67,8 +75,8 @@ public class TrafficCop {
                 case RequestDTO.LIST_INSECTS:
                     ur = listUtil.getInsectList();
                     break;
-                case RequestDTO.LIST_TEAMS:
-                    ur = listUtil.getTeamList(req.getTeam().getTeamID());
+                case RequestDTO.GET_MEMBER:
+                    ur = listUtil.getTeamMemberProfileData(req.getTeamMemberID(), listUtil, dataUtil);
                     break;
                 case RequestDTO.ADD_EVALUATION_INSECT:
                     ur = dataUtil.addEvaluationInsect(req.getEvaluationInsect());
@@ -88,13 +96,12 @@ public class TrafficCop {
                 case RequestDTO.UPDATE_CONDITIONS:
                     ur = dataUtil.updateConditions(req.getConditions());
                     break;
-                case RequestDTO.UPDATE_EVALUATION_IMAGE:
-                    ur = dataUtil.updateEvaluationImage(req.getEvaluationImage());
+                case RequestDTO.SEND_INVITE_TO_TEAM:
+                    ur = cloudMsgUtil.sendInviteToTeam(req.getTeamMemberID(), req.getTeamID(), platformUtil, dataUtil);
                     break;
                 case RequestDTO.UPDATE_STREAM:
                     ur = dataUtil.updateStream(req.getStream());
                     break;
-
                 case RequestDTO.LIST_EVALUATION_BY_TEAM_MEMBER:
                     ur = listUtil.getEvaluationByTeamMember(req.getTeamMemberID());
                     break;
