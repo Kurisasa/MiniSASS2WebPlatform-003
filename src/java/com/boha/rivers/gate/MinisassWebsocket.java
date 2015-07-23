@@ -8,6 +8,7 @@ package com.boha.rivers.gate;
 import com.boha.rivers.data.Teammember;
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.ResponseDTO;
+import com.boha.rivers.util.CloudMsgUtil;
 import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
@@ -46,8 +47,9 @@ public class MinisassWebsocket {
     @EJB
     TrafficCop trafficCop;
     @EJB
+    CloudMsgUtil cloudMsgUtil;
+    @EJB
     PlatformUtil platformUtil;
-    
 
     static final String SOURCE = "TeamWebSocket";
 
@@ -63,10 +65,10 @@ public class MinisassWebsocket {
         try {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             resp = trafficCop.processRequest(dto,
-                    dataUtil, listUtil);
-             System.err.println(gson.toJson(resp));
+                    dataUtil, listUtil, cloudMsgUtil, platformUtil);
+            System.err.println(gson.toJson(resp));
             gg = GZipUtility.getZippedResponse(resp);
-            
+
         } catch (Exception ex) {
             log.log(Level.SEVERE, null, ex);
             resp.setStatusCode(111);
@@ -106,16 +108,13 @@ public class MinisassWebsocket {
             }
         }
     }
+
     @OnError
     public void onError(Throwable t) {
         log.log(Level.SEVERE, "#############################@OnError, websocket failed", t);
-      
+
         //session.getBasicRemote().sendText(gson.toJson(r));
     }
-
-         
-           
-           
 
     Gson gson = new Gson();
     static final Logger log = Logger.getLogger(MinisassWebsocket.class.getSimpleName());

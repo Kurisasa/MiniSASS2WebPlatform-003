@@ -9,6 +9,7 @@ import com.boha.rivers.data.Teammember;
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.RequestList;
 import com.boha.rivers.transfer.ResponseDTO;
+import com.boha.rivers.util.CloudMsgUtil;
 import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.Elapsed;
 import com.boha.rivers.util.GZipUtility;
@@ -45,10 +46,11 @@ public class CachedRequestWebSocket {
     @EJB
     ListUtil listUtil;
     @EJB
-    PlatformUtil platformUtil;
-    @EJB
     TrafficCop trafficCop;
-   
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
+    @EJB
+    PlatformUtil platformUtil;
     static final String SOURCE = "CachedRequestWebSocket";
     //TODO - clean up expired sessions!!!!
     public static final Set<Session> peers
@@ -65,7 +67,7 @@ public class CachedRequestWebSocket {
 
             RequestList dto = gson.fromJson(message, RequestList.class);
             for (RequestDTO req : dto.getRequests()) {
-               ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil);
+                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil, cloudMsgUtil, platformUtil);
                 if (resp.getStatusCode() == 0) {
                     goodCount++;
                 } else {

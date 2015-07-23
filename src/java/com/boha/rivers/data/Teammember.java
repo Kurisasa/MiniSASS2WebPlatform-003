@@ -47,6 +47,8 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Teammember.findByTeamMemberImage", query = "SELECT t FROM Teammember t WHERE t.teamMemberImage = :teamMemberImage")})
 public class Teammember implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamMember")
+    private List<Gcmdevice> gcmdeviceList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "teamMember")
     private List<Tmember> tmemberList;
     @Lob
     @Size(max = 65535)
@@ -229,6 +231,14 @@ public class Teammember implements Serializable {
 
     public void setTmemberList(List<Tmember> tmemberList) {
         this.tmemberList = tmemberList;
+    }
+
+    public List<Gcmdevice> getGcmdeviceList() {
+        return gcmdeviceList;
+    }
+
+    public void setGcmdeviceList(List<Gcmdevice> gcmdeviceList) {
+        this.gcmdeviceList = gcmdeviceList;
     }
 
   

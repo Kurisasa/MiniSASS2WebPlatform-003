@@ -17,6 +17,7 @@ import com.boha.rivers.data.River;
 import com.boha.rivers.data.Stream;
 import com.boha.rivers.data.Team;
 import com.boha.rivers.data.Teammember;
+import com.boha.rivers.data.Tmember;
 import com.boha.rivers.dto.CategoryDTO;
 import com.boha.rivers.dto.CommentDTO;
 import com.boha.rivers.dto.ConditionsDTO;
@@ -34,6 +35,7 @@ import com.boha.rivers.dto.RiverDTO;
 import com.boha.rivers.dto.StreamDTO;
 import com.boha.rivers.dto.TeamDTO;
 import com.boha.rivers.dto.TeamMemberDTO;
+import com.boha.rivers.dto.TmemberDTO;
 import com.boha.rivers.transfer.ResponseDTO;
 import static com.boha.rivers.util.DataUtil.log;
 import java.util.ArrayList;
@@ -270,6 +272,41 @@ public class ListUtil {
             resp.getTeamList().add(new TeamDTO(tea));
         }
 
+        return resp;
+    }
+
+    public ResponseDTO getTeamMemberProfileData(Integer teamMemberID, ListUtil listUtil, DataUtil dataUtil) {
+        ResponseDTO resp = new ResponseDTO();
+        Query q = em.createNamedQuery("Teammember.findByTeamMemberID", Teammember.class);
+        q.setParameter("teamMemberID", teamMemberID);
+        q.setMaxResults(1);
+        Teammember cs = (Teammember) q.getSingleResult();
+
+        TeamMemberDTO teamM = new TeamMemberDTO(cs);
+        for (Tmember t1 : cs.getTmemberList()) {
+
+            TmemberDTO dTO = new TmemberDTO(t1);
+            TeamDTO dTO2 = new TeamDTO(t1.getTeam());
+            if (!cs.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
+                for (Teammember mt : t1.getTeam().getTeammemberList()) {
+                    if (!cs.getEmail().equals(mt.getEmail())) {
+                        dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
+                    }
+                    dTO.setTeam(dTO2);
+                    teamM.getTmemberList().add(dTO);
+                }
+            }
+        }
+        TeamDTO team = new TeamDTO(cs.getTeam());
+        for(Teammember t:cs.getTeam().getTeammemberList()){
+            if(!t.getEmail().equals(cs.getEmail())){
+                team.getTeammemberList().add(new TeamMemberDTO(t));
+            }
+        }
+        teamM.setTeam(team);
+        teamM.setEvaluationCount(cs.getEvaluationList().size());
+
+        resp.setTeamMember(teamM);
         return resp;
     }
 
