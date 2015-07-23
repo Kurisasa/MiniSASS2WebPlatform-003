@@ -5,14 +5,12 @@
  */
 package com.boha.rivers.gate;
 
-import static com.boha.rivers.gate.CachedRequestWebSocket.log;
-import static com.boha.rivers.gate.Test.log;
-import static com.boha.rivers.servlet.RiverListingServlet.getElapsed;
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.RequestList;
 import com.boha.rivers.transfer.ResponseDTO;
 import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.Elapsed;
+import static com.boha.rivers.util.Elapsed.getElapsed;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
 import com.boha.rivers.util.PlatformUtil;
