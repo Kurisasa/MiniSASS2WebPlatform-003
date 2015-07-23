@@ -72,9 +72,6 @@ public class TrafficCop {
                 case RequestDTO.LIST_EVALUATION_SITES:
                     ur = listUtil.getEvaluationList();
                     break;
-                case RequestDTO.LIST_INSECTS:
-                    ur = listUtil.getInsectList();
-                    break;
                 case RequestDTO.GET_MEMBER:
                     ur = listUtil.getTeamMemberProfileData(req.getTeamMemberID(), listUtil, dataUtil);
                     break;
@@ -162,6 +159,9 @@ public class TrafficCop {
                 case RequestDTO.ADD_TEAM:
                     dataUtil.addTeam(req.getTeam(), req.getTeamMemberID());
                     ur.setMessage("Member registered team");
+                    break;
+                case RequestDTO.SEARCH_MEMBERS:
+                    ur = listUtil.searchForMembers(req.getSearch(), req.getEmail());
                     break;
 
                 default:
