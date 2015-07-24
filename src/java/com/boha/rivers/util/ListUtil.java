@@ -329,9 +329,13 @@ public class ListUtil {
         for (Teammember t : list) {
             TeamMemberDTO tdto = new TeamMemberDTO(t);
             if (!email.equals(t.getEmail())) {
+
                 for (Tmember tm : t.getTmemberList()) {
-                    tdto.getTmemberList().add(new TmemberDTO(tm));
+                    if (tm.getAcceptInvite() == 1) {
+                        tdto.getTmemberList().add(new TmemberDTO(tm));
+                    }
                 }
+
                 resp.getTeamMemberList().add(tdto);
             }
         }

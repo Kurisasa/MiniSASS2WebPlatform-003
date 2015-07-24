@@ -93,7 +93,7 @@ public class TrafficCop {
                 case RequestDTO.UPDATE_CONDITIONS:
                     ur = dataUtil.updateConditions(req.getConditions());
                     break;
-                case RequestDTO.SEND_INVITE_TO_TEAM:
+                case RequestDTO.SEND_INVITE_TO_TEAM_MEMBER:
                     ur = cloudMsgUtil.sendInviteToTeam(req.getTeamMemberID(), req.getTeamID(), platformUtil, dataUtil);
                     break;
                 case RequestDTO.UPDATE_STREAM:

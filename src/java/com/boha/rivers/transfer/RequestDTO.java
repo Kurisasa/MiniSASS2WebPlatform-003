@@ -63,7 +63,7 @@ public class RequestDTO implements Serializable {
             UPDATE_COMMENT = 38,
             UPDATE_EVALUATION = 39,
             UPDATE_CONDITIONS = 55,
-            SEND_INVITE_TO_TEAM = 56,
+            SEND_INVITE_TO_TEAM_MEMBER = 56,
             UPDATE_STREAM = 57;
 
     public static final int LIST_RIVERS_IN_COUNTRY = 40,
