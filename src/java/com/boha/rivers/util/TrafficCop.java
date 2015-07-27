@@ -5,7 +5,6 @@
  */
 package com.boha.rivers.util;
 
-import com.boha.rivers.data.Gcmdevice;
 import com.boha.rivers.transfer.RequestDTO;
 import com.boha.rivers.transfer.ResponseDTO;
 import java.util.logging.Level;
@@ -14,7 +13,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 /**
  *
