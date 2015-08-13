@@ -328,7 +328,7 @@ public class ListUtil {
         List<Teammember> list = q.getResultList();
         for (Teammember t : list) {
             TeamMemberDTO tdto = new TeamMemberDTO(t);
-            if (!email.equals(t.getEmail())) {
+            if (!email.trim().equals(t.getEmail().trim())) {
 
                 for (Tmember tm : t.getTmemberList()) {
                     if (tm.getAcceptInvite() == 1) {

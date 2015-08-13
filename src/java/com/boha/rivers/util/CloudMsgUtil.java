@@ -9,7 +9,6 @@ import com.boha.rivers.data.Gcmdevice;
 import com.boha.rivers.data.Team;
 import com.boha.rivers.data.Teammember;
 import com.boha.rivers.data.Tmember;
-import com.boha.rivers.dto.TeamDTO;
 import com.boha.rivers.dto.TmemberDTO;
 import com.boha.rivers.transfer.ResponseDTO;
 import com.google.android.gcm.server.Constants;
