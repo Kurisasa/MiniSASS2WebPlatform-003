@@ -29,6 +29,11 @@ public class EvaluationSiteDTO implements Serializable {
     private RiverDTO river;
     private StreamDTO stream;
 
+    private String siteName;
+    private Integer gID;
+    private String description;
+    private String riverName2;
+
     public EvaluationSiteDTO() {
     }
 
@@ -44,7 +49,43 @@ public class EvaluationSiteDTO implements Serializable {
         category = new CategoryDTO(c.getCategory());
         river = new RiverDTO(c.getRiver());
         riverName = c.getRiver().getRiverName();
+        siteName = c.getSiteName();
+        gID = c.getGID();
+        description = c.getDescription();
+        riverName2 = c.getRiverName();
 
+    }
+
+    public String getRiverName2() {
+        return riverName2;
+    }
+
+    public void setRiverName2(String riverName2) {
+        this.riverName2 = riverName2;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
+    public Integer getgID() {
+        return gID;
+    }
+
+    public void setgID(Integer gID) {
+        this.gID = gID;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public StreamDTO getStream() {

@@ -30,9 +30,11 @@ import javax.validation.constraints.Size;
 @Table(name = "river")
 @NamedQueries({
     @NamedQuery(name = "River.findAll", query = "SELECT r FROM River r"),
+    @NamedQuery(name = "River.countAll", query = "SELECT count(r) FROM River r "),
     @NamedQuery(name = "River.findByRiverID", query = "SELECT r FROM River r WHERE r.riverID = :riverID"),
     @NamedQuery(name = "River.findByRiverName", query = "SELECT r FROM River r WHERE r.riverName = :riverName")})
-public class River implements Serializable {
+public class River implements Serializable, Comparable<River> {
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "river")
     private List<Stream> streamList;
     private static final long serialVersionUID = 1L;
@@ -127,5 +129,10 @@ public class River implements Serializable {
     public void setStreamList(List<Stream> streamList) {
         this.streamList = streamList;
     }
-    
+
+    @Override
+    public int compareTo(River o) {
+        return this.riverName.compareTo(o.riverName);
+    }
+
 }

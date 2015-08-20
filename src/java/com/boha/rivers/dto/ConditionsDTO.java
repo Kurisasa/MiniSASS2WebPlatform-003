@@ -17,7 +17,7 @@ import java.util.List;
 public class ConditionsDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private Integer conditionsID, categoryID;
-    private String conditionName;
+    private String conditionName,categoryName;
     private double low;
     private double high;
     private List<EvaluationDTO> evaluationList = new ArrayList<>();
@@ -32,6 +32,15 @@ public class ConditionsDTO implements Serializable {
         low = c.getLow();
         high = c.getHigh();  
         categoryID = c.getCategory().getCategoryId();
+        categoryName = c.getCategory().getCategoryName();
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public Integer getConditionsID() {

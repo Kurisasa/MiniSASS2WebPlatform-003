@@ -280,16 +280,16 @@ public class ListUtil {
         Query q = em.createNamedQuery("Teammember.findByTeamMemberID", Teammember.class);
         q.setParameter("teamMemberID", teamMemberID);
         q.setMaxResults(1);
-        Teammember cs = (Teammember) q.getSingleResult();
+        Teammember tm = (Teammember) q.getSingleResult();
 
-        TeamMemberDTO teamM = new TeamMemberDTO(cs);
-        for (Tmember t1 : cs.getTmemberList()) {
+        TeamMemberDTO teamM = new TeamMemberDTO(tm);
+        for (Tmember t1 : tm.getTmemberList()) {
 
             TmemberDTO dTO = new TmemberDTO(t1);
             TeamDTO dTO2 = new TeamDTO(t1.getTeam());
-            if (!cs.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
+            if (!tm.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
                 for (Teammember mt : t1.getTeam().getTeammemberList()) {
-                    if (!cs.getEmail().equals(mt.getEmail())) {
+                    if (!tm.getEmail().equals(mt.getEmail())) {
                         dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
                     }
                     dTO.setTeam(dTO2);
@@ -297,14 +297,14 @@ public class ListUtil {
                 }
             }
         }
-        TeamDTO team = new TeamDTO(cs.getTeam());
-        for (Teammember t : cs.getTeam().getTeammemberList()) {
-            if (!t.getEmail().equals(cs.getEmail())) {
+        TeamDTO team = new TeamDTO(tm.getTeam());
+        for (Teammember t : tm.getTeam().getTeammemberList()) {
+            if (!t.getEmail().equals(tm.getEmail())) {
                 team.getTeammemberList().add(new TeamMemberDTO(t));
             }
         }
         teamM.setTeam(team);
-        teamM.setEvaluationCount(cs.getEvaluationList().size());
+        teamM.setEvaluationCount(tm.getEvaluationList().size());
 
         resp.setTeamMember(teamM);
         return resp;
@@ -331,9 +331,8 @@ public class ListUtil {
             if (!email.equals(t.getEmail())) {
 
                 for (Tmember tm : t.getTmemberList()) {
-                    if (tm.getAcceptInvite() == 1) {
-                        tdto.getTmemberList().add(new TmemberDTO(tm));
-                    }
+                    tdto.getTmemberList().add(new TmemberDTO(tm));
+
                 }
 
                 resp.getTeamMemberList().add(tdto);

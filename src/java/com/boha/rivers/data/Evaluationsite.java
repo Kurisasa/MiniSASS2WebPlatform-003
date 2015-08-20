@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -24,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -38,9 +40,27 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "Evaluationsite.findByLatitude", query = "SELECT e FROM Evaluationsite e WHERE e.latitude = :latitude"),
     @NamedQuery(name = "Evaluationsite.findByLongitude", query = "SELECT e FROM Evaluationsite e WHERE e.longitude = :longitude"),
     @NamedQuery(name = "Evaluationsite.findByAccuracy", query = "SELECT e FROM Evaluationsite e WHERE e.accuracy = :accuracy"),
-    @NamedQuery(name = "Evaluationsite.findByDateRegistered", query = "SELECT e FROM Evaluationsite e WHERE e.dateRegistered = :dateRegistered")})
-public class Evaluationsite implements Serializable {
-  
+    @NamedQuery(name = "Evaluationsite.findByDateRegistered", query = "SELECT e FROM Evaluationsite e WHERE e.dateRegistered = :dateRegistered"),
+    @NamedQuery(name = "Evaluationsite.findBySiteName", query = "SELECT e FROM Evaluationsite e WHERE e.siteName = :siteName"),
+    @NamedQuery(name = "Evaluationsite.findByGID", query = "SELECT e FROM Evaluationsite e WHERE e.gID = :gID")})
+public class Evaluationsite implements Serializable, Comparable<Evaluationsite> {
+
+    @Size(max = 160)
+    @Column(name = "siteName")
+    private String siteName;
+    @Column(name = "gID")
+    private Integer gID;
+    @Basic(optional = false)
+    @NotNull
+    @Lob
+    @Size(min = 1, max = 65535)
+    @Column(name = "description")
+    private String description;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 160)
+    @Column(name = "riverName")
+    private String riverName;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -178,5 +198,41 @@ public class Evaluationsite implements Serializable {
         return "com.boha.rivers.data.Evaluationsite[ evaluationSiteID=" + evaluationSiteID + " ]";
     }
 
-   
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
+    public Integer getGID() {
+        return gID;
+    }
+
+    public void setGID(Integer gID) {
+        this.gID = gID;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRiverName() {
+        return riverName;
+    }
+
+    public void setRiverName(String riverName) {
+        this.riverName = riverName;
+    }
+
+    @Override
+    public int compareTo(Evaluationsite o) {
+        return this.riverName.compareTo(o.riverName);
+    }
+
 }

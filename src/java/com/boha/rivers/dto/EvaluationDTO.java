@@ -44,8 +44,12 @@ public class EvaluationDTO implements Serializable {
         remarks = c.getRemarks();
         score = c.getScore();
         pH = c.getPH();
-        conditionsID = c.getConditions().getConditionsID();
-        conditionName = c.getConditions().getConditionName();
+        if (c.getConditions() != null) {
+            conditions = new ConditionsDTO(c.getConditions());
+            conditionsID = c.getConditions().getConditionsID();
+            conditionName = c.getConditions().getConditionName();
+        }
+
         waterTemperature = c.getWaterTemperature();
         oxygen = c.getOxygen();
         waterClarity = c.getWaterClarity();

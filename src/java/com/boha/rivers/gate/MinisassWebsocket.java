@@ -13,6 +13,7 @@ import com.boha.rivers.util.DataUtil;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
 import com.boha.rivers.util.PlatformUtil;
+import com.boha.rivers.util.DumbFilesImporter;
 import com.boha.rivers.util.TrafficCop;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -51,6 +52,8 @@ public class MinisassWebsocket {
     @EJB
     PlatformUtil platformUtil;
 
+    @EJB
+    DumbFilesImporter dumbFilesImporter;
     static final String SOURCE = "TeamWebSocket";
 
     public static final Set<Session> peers
@@ -65,7 +68,7 @@ public class MinisassWebsocket {
         try {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             resp = trafficCop.processRequest(dto,
-                    dataUtil, listUtil, cloudMsgUtil, platformUtil);
+                    dataUtil, listUtil, cloudMsgUtil, platformUtil, dumbFilesImporter);
             System.err.println(gson.toJson(resp));
             gg = GZipUtility.getZippedResponse(resp);
 

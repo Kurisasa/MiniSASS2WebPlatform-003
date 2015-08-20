@@ -36,8 +36,11 @@ public class TrafficCop {
     @EJB
     PlatformUtil platformUtil;
 
+    @EJB
+    DumbFilesImporter dumbFilesImporter;
+
     public ResponseDTO processRequest(RequestDTO req,
-            DataUtil dataUtil, ListUtil listUtil, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil) {
+            DataUtil dataUtil, ListUtil listUtil, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil, DumbFilesImporter dumbFilesImporter) {
         long start = System.currentTimeMillis();
         ResponseDTO ur = new ResponseDTO();
         try {
@@ -161,7 +164,12 @@ public class TrafficCop {
                 case RequestDTO.SEARCH_MEMBERS:
                     ur = listUtil.searchForMembers(req.getSearch(), req.getEmail());
                     break;
-
+                case RequestDTO.IMPORT_MEMBER_INFO:
+                    ur = dataUtil.importMembers(req.getTeamMember());
+                    break;
+                case RequestDTO.IMPORT_RIVER_SITE_INFO:
+                    dumbFilesImporter.doDaBusiness();
+                    break;
                 default:
                     ur.setStatusCode(444);
                     ur.setMessage("#### Unknown Request");

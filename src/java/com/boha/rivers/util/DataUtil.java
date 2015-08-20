@@ -77,7 +77,9 @@ public class DataUtil {
             q.setMaxResults(1);
             Teammember cs = (Teammember) q.getSingleResult();
 
-            addDevice(gcmdevice, cs.getTeamMemberID());
+            if (gcmdevice != null) {
+                addDevice(gcmdevice, cs.getTeamMemberID());
+            }
 
             TeamMemberDTO teamM = new TeamMemberDTO(cs);
             for (Tmember t1 : cs.getTmemberList()) {
@@ -107,6 +109,10 @@ public class DataUtil {
 
             resp.setOrganisationtypeList(listUtil.getOrganisationtypeList());
             resp.setCountryList(listUtil.getCountryList());
+        } catch (NoResultException e) {
+            log.log(Level.SEVERE, "Failed", e);
+            resp.setMessage("Email does not exist");
+            resp.setStatusCode(123);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed");
@@ -278,7 +284,7 @@ public class DataUtil {
 
             log.log(Level.OFF, "Team Member has been registered for: {0} ",
                     new Object[]{tm.getFirstName()});
-
+            resp.setMessage("Team Member has been registered for: " + team.getTeamName() + " team");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed");
@@ -301,11 +307,80 @@ public class DataUtil {
         return dto;
     }
 
+    public ResponseDTO importMembers(TeamMemberDTO member) {
+        ResponseDTO resp = null;
+        try {
+            Query q = em.createNamedQuery("Team.findByTeamName", Team.class);
+            q.setParameter("teamName", member.getTeam().getTeamName());
+            q.setMaxResults(1);
+
+            Team tm = (Team) q.getSingleResult();
+
+            resp = addTeamMemberHelper(member, tm.getTeamID());
+            log.log(Level.INFO, "Team already exist : {0}", tm.getTeamName());
+        } catch (NoResultException e) {
+
+            Team t = new Team();
+            t.setTeamImage(member.getTeam().getTeamImage());
+            t.setTeamName(member.getTeam().getTeamName());
+            t.setDateRegistered(new Date());
+            t.setCountry(em.find(Country.class, member.getTeam().getCountryID()));
+            t.setOrganisationType(em.find(Organisationtype.class, member.getTeam().getOrganisationTypeID()));
+
+            em.persist(t);
+            em.flush();
+            resp = addTeamMemberHelper(member, t.getTeamID());
+            log.log(Level.INFO, "Team imported successfully : {0}", t.getTeamName());
+        }
+
+        return resp;
+    }
+
+    private ResponseDTO addTeamMemberHelper(TeamMemberDTO member, int teamID) {
+        ResponseDTO resp = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("Teammember.findByEmail", Teammember.class);
+            q.setParameter("email", member.getEmail());
+            q.setMaxResults(1);
+            Teammember t = (Teammember) q.getSingleResult();
+            if (t.getTeam() == null) {
+                t.setTeam(em.find(Team.class, teamID));
+            }
+
+            t.setPin(getRandomPin());
+            em.merge(t);
+            em.flush();
+
+            resp.setTeamMember(new TeamMemberDTO(t));
+            resp.setMessage("Member already exist");
+            log.log(Level.INFO, "Member already exist : {0}", t.getFirstName());
+
+        } catch (NoResultException e) {
+
+            Teammember t1 = new Teammember();
+            t1.setFirstName(member.getFirstName());
+            t1.setLastName(member.getLastName());
+            t1.setEmail(member.getEmail());
+            t1.setCellphone(member.getCellphone());
+            t1.setActiveFlag(member.getActiveFlag());
+            t1.setDateRegistered(new Date());
+            t1.setPin(getRandomPin());
+            t1.setTeam(em.find(Team.class, teamID));
+
+            em.persist(t1);
+            em.flush();
+            resp.setMessage("Member imported successfully");
+            resp.setTeamMember(new TeamMemberDTO(t1));
+            log.log(Level.INFO, "Member imported successfully : {0}", t1.getFirstName());
+        }
+        return resp;
+    }
     /*EmailUtil.sendMail(tm.getEmail(), "Minisass Registration", "Hi, " + tm.getFirstName()
      + "\n You've Succesfully Registered on Minisass Under Team " + tm.getTeam().getTeamName()
      + ", Here are your Siging in details:\n"
      + "email : " + tm.getEmail() + "\nPassword : " + tm.getPin()
      + ".\n Thank you and Enjoy....", new CASessionBean());*/
+
     public ResponseDTO addCountry(CountryDTO country) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
@@ -701,7 +776,7 @@ public class DataUtil {
             teamM.setEvaluationCount(tm.getEvaluationList().size());
 
             resp.setTeamMember(teamM);
-
+            resp.setMessage("Profile Updated");
             log.log(Level.INFO, "Team member updated");
 
         } catch (Exception e) {
@@ -830,7 +905,7 @@ public class DataUtil {
 
             log.log(Level.OFF, "evaluation has been added for: {0} ",
                     new Object[]{e.getEvaluationDate()});
-            Query q = em.createNamedQuery("Gcmdevice.findTeamMember", Gcmdevice.class);
+            /*Query q = em.createNamedQuery("Gcmdevice.findTeamMember", Gcmdevice.class);
             q.setParameter("teamMemberID", evaluation.getTeamMemberID());
             List<Gcmdevice> list = q.getResultList();
             List<String> registrationIDs = new ArrayList<>();
@@ -840,7 +915,8 @@ public class DataUtil {
             int OK = cloudMsgUtil.sendMessage(registrationIDs, platformUtil);
             if (OK == 0) {
                 resp.setMessage("Observation created and GCM message sent");
-            }
+            }*/
+            resp.setMessage("Observation created");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed");

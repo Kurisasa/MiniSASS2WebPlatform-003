@@ -18,7 +18,7 @@ public class TeamMemberDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Integer teamMemberID, teamID, evaluationCount;
-    private String firstName;
+    private String firstName, teamName;
     private String lastName;
     private String email;
     private String cellphone;
@@ -45,7 +45,16 @@ public class TeamMemberDTO implements Serializable {
         pin = c.getPin();
         activeFlag = c.getActiveFlag();
         teamMemberImage = c.getTeamMemberImage();
+        teamName = c.getTeam().getTeamName();
         // team = new TeamDTO(c.getTeam());
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
     }
 
     public List<GcmdeviceDTO> getGcmdeviceList() {

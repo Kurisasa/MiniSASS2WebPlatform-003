@@ -15,6 +15,7 @@ import com.boha.rivers.util.Elapsed;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
 import com.boha.rivers.util.PlatformUtil;
+import com.boha.rivers.util.DumbFilesImporter;
 import com.boha.rivers.util.TrafficCop;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -51,6 +52,8 @@ public class CachedRequestWebSocket {
     CloudMsgUtil cloudMsgUtil;
     @EJB
     PlatformUtil platformUtil;
+    @EJB
+    DumbFilesImporter dumbFilesImporter;
     static final String SOURCE = "CachedRequestWebSocket";
     //TODO - clean up expired sessions!!!!
     public static final Set<Session> peers
@@ -67,7 +70,7 @@ public class CachedRequestWebSocket {
 
             RequestList dto = gson.fromJson(message, RequestList.class);
             for (RequestDTO req : dto.getRequests()) {
-                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil, cloudMsgUtil, platformUtil);
+                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil, cloudMsgUtil, platformUtil, dumbFilesImporter);
                 if (resp.getStatusCode() == 0) {
                     goodCount++;
                 } else {

@@ -17,6 +17,7 @@ import com.boha.rivers.util.Elapsed;
 import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
 import com.boha.rivers.util.PlatformUtil;
+import com.boha.rivers.util.DumbFilesImporter;
 import com.boha.rivers.util.TrafficCop;
 import com.google.gson.Gson;
 import com.oreilly.servlet.ServletUtils;
@@ -50,6 +51,8 @@ public class CachedDataServlet extends HttpServlet {
     TrafficCop trafficCop;
     @EJB
     CloudMsgUtil cloudMsgUtil;
+      @EJB
+    DumbFilesImporter dumbFilesImporter;
     static final String SOURCE = "CachedDataServlet";
 
     /**
@@ -75,7 +78,7 @@ public class CachedDataServlet extends HttpServlet {
 
             RequestList dto = getRequest(request);
             for (RequestDTO req : dto.getRequests()) {
-                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil, cloudMsgUtil, platformUtil);
+                ResponseDTO resp = trafficCop.processRequest(req, dataUtil, listUtil, cloudMsgUtil, platformUtil, dumbFilesImporter);
                 if (resp.getStatusCode() == 0) {
                     goodCount++;
                 } else {

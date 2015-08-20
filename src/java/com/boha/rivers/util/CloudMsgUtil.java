@@ -48,6 +48,7 @@ public class CloudMsgUtil {
             Exception, DataException {
         ResponseDTO resp = new ResponseDTO();
         //send message to Google servers
+        // add when relationship is established
         Tmember h = new Tmember();
         h.setAcceptInvite(0);
         h.setDateCreated(new Date());
@@ -64,9 +65,10 @@ public class CloudMsgUtil {
         }
 
         resp.settMember(new TmemberDTO(h));
+
         Sender sender = new Sender(API_KEY);
         Gson g = new Gson();
-        String txtGson = g.toJson(resp.gettMember());
+        String txtGson ="You've been invited to join team "+ h.getTeam().getTeamName()+" from miniSASS river health care";
         Message message = new Message.Builder()
                 .addData("message", txtGson)
                 .addData("dateStamp", "" + new Date().getTime()).build();
@@ -80,13 +82,15 @@ public class CloudMsgUtil {
         }
         if (registrationIDs.isEmpty()) {
             LOG.log(Level.SEVERE, "#### No instructor registrationIDs found ");
-            resp.setMessage("No team member found or their devices are not registered");
+            resp.setMessage("Send an email to invite the into using the app");
             resp.setStatusCode(RETRIES);
             //platformUtil.addErrorStore(889, "#### No intructor devices found ", "Cloud Message Services");
             return resp;
         }
+
         boolean OK;
         String rMsg;
+
         if (registrationIDs.size() == 1) {
             Result result = sender.send(message, registrationIDs.get(0), RETRIES);
             OK = handleResult(result, platformUtil);
@@ -97,12 +101,15 @@ public class CloudMsgUtil {
         }
         if (OK) {
             rMsg = "Google GCM - message has been sent to Google servers";
+
         } else {
-            rMsg = "Google GCM - message has not been sent. Error occured";
+            rMsg = "Google GCM - Send an email to invite the into using the app";
+
             resp.setStatusCode(ResponseDTO.ERROR_SERVER);
             resp.setMessage(rMsg);
             //platformUtil.addErrorStore(889, "Google GCM - message has not been sent. Error occured", "Cloud Message Services");
         }
+
         resp.setMessage(rMsg);
         return resp;
     }

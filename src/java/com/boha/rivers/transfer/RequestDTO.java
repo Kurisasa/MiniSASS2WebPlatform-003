@@ -40,7 +40,7 @@ public class RequestDTO implements Serializable {
             SIGN_IN_MEMBER = 3,
             REGISTER_TEAM_MEMBER = 2,
             DECLINE_MEMBER = 12,
-            ADD_INSECT = 13,
+            IMPORT_MEMBER_INFO = 13,
             ADD_INSECT_IMAGE = 14,
             ADD_EVALUATION = 15,
             ADD_COMMENT = 16,
@@ -50,7 +50,7 @@ public class RequestDTO implements Serializable {
 
     public static final int ADD_COUNTRY = 21,
             INVITE_MEMBER = 22,
-            ADD_TOWN = 23;
+            IMPORT_RIVER_SITE_INFO = 23;
 
     public static final int UPDATE_RIVER = 30,
             UPDATE_RIVER_TOWN = 31,

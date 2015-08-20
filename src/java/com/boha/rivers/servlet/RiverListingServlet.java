@@ -13,6 +13,7 @@ import com.boha.rivers.util.GZipUtility;
 import com.boha.rivers.util.ListUtil;
 import com.boha.rivers.util.PlatformUtil;
 import com.boha.rivers.util.RiverDataWorker;
+import com.boha.rivers.util.DumbFilesImporter;
 import com.boha.rivers.util.TrafficCop;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -48,6 +49,8 @@ public class RiverListingServlet extends HttpServlet {
     CloudMsgUtil cloudMsgUtil;
     @EJB
     PlatformUtil platformUtil;
+    @EJB
+    DumbFilesImporter siteAndEvaluationsImporter;
     static final String SOURCE = "RiverListingServlet";
 
     /**
@@ -73,7 +76,7 @@ public class RiverListingServlet extends HttpServlet {
                 log.log(Level.INFO, "{0} started ..requestType: {1}",
                         new Object[]{RiverListingServlet.class.getSimpleName(), dto.getRequestType()});
                 resp = trafficCop.processRequest(dto,
-                        dataUtil, listUtil, cloudMsgUtil, platformUtil);
+                        dataUtil, listUtil, cloudMsgUtil, platformUtil, siteAndEvaluationsImporter);
 
             } else {
                 resp.setStatusCode(999);

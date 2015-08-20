@@ -104,7 +104,7 @@ public class GZipUtility {
                 dir.mkdir();
             }
             Random rand = new Random(System.currentTimeMillis());
-            gzipFileName = "smartcity" + System.currentTimeMillis()
+            gzipFileName = "minisass" + System.currentTimeMillis()
                     + "_" + rand.nextInt(99999999) + ".txt.gz";
             zip = new File(dir, gzipFileName);
             ZipOutputStream out = null;
