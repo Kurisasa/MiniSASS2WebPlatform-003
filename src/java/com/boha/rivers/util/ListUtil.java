@@ -48,6 +48,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -88,7 +89,7 @@ public class ListUtil {
     public ResponseDTO getRiverData(double currentLatitude, double currentLongitude, int radius, int type, int flag) {
         try {
             ResponseDTO resp = new ResponseDTO();
-            resp.setEvaluationSiteList(getEvaluationSiteDTOs());
+            //resp.setEvaluationSiteList(getEvaluationSiteDTOs());
             resp.setCategoryList(getCategoryDTOs());
             resp.setCommentList(getCommentDTOs());
             resp.setConditionsList(getConditionsDTOs());
@@ -239,6 +240,26 @@ public class ListUtil {
         return resp;
     }
 
+    public ResponseDTO getPasswordByEmail(String email) throws DataException {
+        ResponseDTO resp = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("Teammember.findByEmail", Teammember.class);
+            q.setParameter("email", email);
+            Teammember list = (Teammember) q.getSingleResult();
+            resp.setTeamMember(new TeamMemberDTO(list));
+            resp.setMessage("Check your email for username and password");
+
+        } catch (NoResultException e) {
+            log.log(Level.SEVERE, "Failed to retrieve ur password", e);
+            throw new NoResultException("No result to process your request");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to retrieve ur password", e);
+            throw new DataException("Failed to process your request");
+
+        }
+        return resp;
+    }
+
     public ResponseDTO getEvaluationSiteByCategory(Integer categoryID) {
         ResponseDTO resp = new ResponseDTO();
         Query q = em.createNamedQuery("Evaluationsite.findByCategoryID", Evaluationsite.class);
@@ -284,18 +305,11 @@ public class ListUtil {
 
         TeamMemberDTO teamM = new TeamMemberDTO(tm);
         for (Tmember t1 : tm.getTmemberList()) {
-
-            TmemberDTO dTO = new TmemberDTO(t1);
-            TeamDTO dTO2 = new TeamDTO(t1.getTeam());
-            if (!tm.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
-                for (Teammember mt : t1.getTeam().getTeammemberList()) {
-                    if (!tm.getEmail().equals(mt.getEmail())) {
-                        dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
-                    }
-                    dTO.setTeam(dTO2);
-                    teamM.getTmemberList().add(dTO);
-                }
+            if (!t1.getTeam().getTeamName().equals(tm.getTeam().getTeamName())) {
+                TmemberDTO dTO = new TmemberDTO(t1);
+                teamM.getTmemberList().add(dTO);
             }
+
         }
         TeamDTO team = new TeamDTO(tm.getTeam());
         for (Teammember t : tm.getTeam().getTeammemberList()) {
@@ -381,7 +395,18 @@ public class ListUtil {
         ResponseDTO resp = new ResponseDTO();
         resp.setOrganisationtypeList(getOrganisationtypeList());
         resp.setCountryList(getCountryList());
+        resp.setTeamList(getTeamListOnly());
         return resp;
+    }
+
+    private List<TeamDTO> getTeamListOnly() {
+        List<TeamDTO> list = new ArrayList<>();
+        Query q = em.createNamedQuery("Team.findAll", Team.class);
+        List<Team> l = q.getResultList();
+        for (Team tea : l) {
+            list.add(new TeamDTO(tea));
+        }
+        return list;
     }
 
     public List<OrganisationtypeDTO> getOrganisationtypeList() {

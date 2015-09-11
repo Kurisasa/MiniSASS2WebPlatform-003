@@ -36,12 +36,14 @@ import com.boha.rivers.dto.TeamMemberDTO;
 import com.boha.rivers.dto.TmemberDTO;
 import com.boha.rivers.transfer.ResponseDTO;
 import com.google.gson.Gson;
+import com.sun.tools.ws.wsdl.framework.DuplicateEntityException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.DuplicateKeyException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -83,18 +85,11 @@ public class DataUtil {
 
             TeamMemberDTO teamM = new TeamMemberDTO(cs);
             for (Tmember t1 : cs.getTmemberList()) {
-
-                TmemberDTO dTO = new TmemberDTO(t1);
-                TeamDTO dTO2 = new TeamDTO(t1.getTeam());
-                if (!cs.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
-                    for (Teammember mt : t1.getTeam().getTeammemberList()) {
-                        if (!cs.getEmail().equals(mt.getEmail())) {
-                            dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
-                        }
-                        dTO.setTeam(dTO2);
-                        teamM.getTmemberList().add(dTO);
-                    }
+                if (!t1.getTeam().getTeamName().equals(cs.getTeam().getTeamName())) {
+                    TmemberDTO dTO = new TmemberDTO(t1);
+                    teamM.getTmemberList().add(dTO);
                 }
+
             }
             TeamDTO team = new TeamDTO(cs.getTeam());
             for (Teammember t : cs.getTeam().getTeammemberList()) {
@@ -111,7 +106,7 @@ public class DataUtil {
             resp.setCountryList(listUtil.getCountryList());
         } catch (NoResultException e) {
             log.log(Level.SEVERE, "Failed", e);
-            resp.setMessage("Email does not exist");
+            resp.setMessage("Email/Password does not exist");
             resp.setStatusCode(123);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
@@ -257,18 +252,11 @@ public class DataUtil {
 
             TeamMemberDTO teamM = new TeamMemberDTO(cs);
             for (Tmember t1 : cs.getTmemberList()) {
-
-                TmemberDTO dTO = new TmemberDTO(t1);
-                TeamDTO dTO2 = new TeamDTO(t1.getTeam());
-                if (!cs.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
-                    for (Teammember mt : t1.getTeam().getTeammemberList()) {
-                        if (!cs.getEmail().equals(mt.getEmail())) {
-                            dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
-                        }
-                        dTO.setTeam(dTO2);
-                        teamM.getTmemberList().add(dTO);
-                    }
+                if (!t1.getTeam().getTeamName().equals(cs.getTeam().getTeamName())) {
+                    TmemberDTO dTO = new TmemberDTO(t1);
+                    teamM.getTmemberList().add(dTO);
                 }
+
             }
             TeamDTO team = new TeamDTO(cs.getTeam());
             for (Teammember t : cs.getTeam().getTeammemberList()) {
@@ -462,7 +450,7 @@ public class DataUtil {
 
             em.persist(org);
             em.flush();
-            resp(new OrganisationtypeDTO(org));
+            resp.getOrganisationtypeList().add(new OrganisationtypeDTO(org));
             log.log(Level.OFF, " Organisation has been successfully added: {0}", org.getOrganisationName());
 
         } catch (PersistenceException e) {
@@ -478,21 +466,31 @@ public class DataUtil {
     }
 //TODO Edited method
 
-    public ResponseDTO registerTeam(TeamDTO team) throws DataException {
+    public ResponseDTO registerTeam(TeamDTO team) throws DataException, DuplicateKeyException {
         ResponseDTO resp = new ResponseDTO();
 
         try {
+            Team t = null;
             log.log(Level.INFO, new Gson().toJson(team));
-            Team t = new Team();
-            t.setTeamImage(team.getTeamImage());
-            t.setTeamName(team.getTeamName());
-            t.setDateRegistered(new Date());
-            t.setCountry(em.find(Country.class, team.getCountryID()));
-            t.setOrganisationType(em.find(Organisationtype.class, team.getOrganisationTypeID()));
-
-            em.persist(t);
-            em.flush();
-
+            if (team.getTeamID() == null) {
+                t = new Team();
+                t.setTeamImage(team.getTeamImage());
+                t.setTeamName(team.getTeamName());
+                t.setDateRegistered(new Date());
+                t.setCountry(em.find(Country.class, team.getCountryID()));
+                t.setOrganisationType(em.find(Organisationtype.class, team.getOrganisationTypeID()));
+                try {
+                    em.persist(t);
+                    em.flush();
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, "Failed Exception", e);
+                    resp.setStatusCode(223);
+                    resp.setMessage("User team name already exist");
+                    return resp;
+                }
+            } else {
+                t = em.find(Team.class, team.getTeamID());
+            }
             TeamDTO teamDTO = new TeamDTO(t);
 
             if (team.getTeammemberList() != null) {
@@ -555,7 +553,10 @@ public class DataUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException("Failed");
+            resp.setStatusCode(222);
+            resp.setMessage("User Already exist");
+            return resp;
+
         }
         return resp;
     }
@@ -754,16 +755,10 @@ public class DataUtil {
             TeamMemberDTO teamM = new TeamMemberDTO(tm);
             for (Tmember t1 : tm.getTmemberList()) {
 
-                TmemberDTO dTO = new TmemberDTO(t1);
-                TeamDTO dTO2 = new TeamDTO(t1.getTeam());
                 if (!tm.getTeam().getTeamName().equals(t1.getTeam().getTeamName())) {
-                    for (Teammember mt : t1.getTeam().getTeammemberList()) {
-                        if (!tm.getEmail().equals(mt.getEmail())) {
-                            dTO2.getTeammemberList().add(new TeamMemberDTO(mt));
-                        }
-                        dTO.setTeam(dTO2);
-                        teamM.getTmemberList().add(dTO);
-                    }
+                    TmemberDTO dTO = new TmemberDTO(t1);
+                    teamM.getTmemberList().add(dTO);
+
                 }
             }
             TeamDTO team = new TeamDTO(tm.getTeam());
@@ -906,16 +901,16 @@ public class DataUtil {
             log.log(Level.OFF, "evaluation has been added for: {0} ",
                     new Object[]{e.getEvaluationDate()});
             /*Query q = em.createNamedQuery("Gcmdevice.findTeamMember", Gcmdevice.class);
-            q.setParameter("teamMemberID", evaluation.getTeamMemberID());
-            List<Gcmdevice> list = q.getResultList();
-            List<String> registrationIDs = new ArrayList<>();
-            for (Gcmdevice g : list) {
-                registrationIDs.add(g.getRegistrationID());
-            }
-            int OK = cloudMsgUtil.sendMessage(registrationIDs, platformUtil);
-            if (OK == 0) {
-                resp.setMessage("Observation created and GCM message sent");
-            }*/
+             q.setParameter("teamMemberID", evaluation.getTeamMemberID());
+             List<Gcmdevice> list = q.getResultList();
+             List<String> registrationIDs = new ArrayList<>();
+             for (Gcmdevice g : list) {
+             registrationIDs.add(g.getRegistrationID());
+             }
+             int OK = cloudMsgUtil.sendMessage(registrationIDs, platformUtil);
+             if (OK == 0) {
+             resp.setMessage("Observation created and GCM message sent");
+             }*/
             resp.setMessage("Observation created");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
@@ -1010,7 +1005,6 @@ public class DataUtil {
     }
 
     public void updateEvaluationSite(EvaluationSiteDTO dto) throws DataException {
-        ResponseDTO resp = new ResponseDTO();
         try {
             Evaluationsite ev = em.find(Evaluationsite.class, dto.getEvaluationSiteID());
             if (dto.getLatitude() > 0) {
@@ -1187,7 +1181,4 @@ public class DataUtil {
         return sb.toString();
     }
 
-    private void resp(OrganisationtypeDTO organisationtypeDTO) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

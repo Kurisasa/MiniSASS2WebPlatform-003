@@ -94,7 +94,9 @@ public class RequestDTO implements Serializable {
             LIST_EVALUATION_BY_RIVER_ID = 78,
             ADD_GCM_DEVICE = 79,
             LIST_STREAM = 90,
-            LIST_BY_STREAM_NAME = 91;
+            LIST_BY_STREAM_NAME = 91,
+            GET_PASSWORD = 92;
+       
 
     private EvaluationDTO evaluation;
     private CategoryDTO category;

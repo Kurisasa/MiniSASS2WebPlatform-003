@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -56,6 +57,9 @@ public class TrafficCop {
                     break;
                 case RequestDTO.ADD_COMMENT:
                     ur = dataUtil.addComment(req.getComment());
+                    break;
+                case RequestDTO.GET_PASSWORD:
+                    ur = listUtil.getPasswordByEmail(req.getEmail());
                     break;
                 case RequestDTO.ADD_EVALUATION:
                     ur = dataUtil.addEvaluation(req.getEvaluation(), req.getInsectImages(), cloudMsgUtil, platformUtil);
@@ -177,7 +181,12 @@ public class TrafficCop {
                     break;
 
             }
-        } catch (DataException e) {
+        }catch(NoResultException e){
+            ur.setStatusCode(121);
+            ur.setMessage("User doesn't exist, Create new account");
+            logger.log(Level.SEVERE, "Duplicate related failure", e);
+        } 
+        catch (DataException e) {
             ur.setStatusCode(101);
             ur.setMessage("Data service failed to process your request");
             logger.log(Level.SEVERE, "Database related failure", e);
